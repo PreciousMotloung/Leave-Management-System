@@ -37,7 +37,7 @@ public class LeaveBalance {
     @Builder.Default
     private Integer usedDays = 0;
 
-    @Column(nullable = false)
+    @Column(name = "\"year\"", nullable = false)
     private Integer year;
 
     // Calculated field for remaining days

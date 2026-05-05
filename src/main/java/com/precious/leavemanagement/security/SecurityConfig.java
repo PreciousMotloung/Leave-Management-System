@@ -38,9 +38,9 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/leave-types").authenticated()
-                        .requestMatchers("/api/leave-requests/pending/**").hasRole("MANAGER")
-                        .requestMatchers("/api/leave-balances/user/**").hasRole("MANAGER")
+                        .requestMatchers(HttpMethod.GET, "/api/leave/types").authenticated()
+                        .requestMatchers("/api/leave/pending").hasRole("MANAGER")
+                        .requestMatchers("/api/leave/balance/**").authenticated()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session
