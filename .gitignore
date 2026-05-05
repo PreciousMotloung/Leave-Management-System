@@ -9,6 +9,7 @@ target/
 .idea/jarRepositories.xml
 .idea/compiler.xml
 .idea/libraries/
+.idea/misc.xml
 *.iws
 *.iml
 *.ipr
@@ -37,3 +38,17 @@ build/
 
 ### Mac OS ###
 .DS_Store
+
+### Environment Variables ###
+.env
+
+### JaCoCo ###
+*.exec
+jacoco.xml
+
+### OpenCode ###
+.opencode/
+opencode.json
+
+### Personal Notes ###
+Claude.md

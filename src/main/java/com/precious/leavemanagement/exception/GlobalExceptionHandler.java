@@ -16,9 +16,10 @@ import java.util.stream.Collectors;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleResourceNotFoundException(
-            ResourceNotFoundException ex, HttpServletRequest request) {
+    @ExceptionHandler({ResourceNotFoundException.class, UserNotFoundException.class, 
+                       LeaveRequestNotFoundException.class, LeaveTypeNotFoundException.class})
+    public ResponseEntity<ErrorResponse> handleNotFoundException(
+            RuntimeException ex, HttpServletRequest request) {
         ErrorResponse error = ErrorResponse.builder()
                 .timestamp(LocalDateTime.now())
                 .status(HttpStatus.NOT_FOUND.value())
@@ -42,9 +43,9 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
 
-    @ExceptionHandler(LeaveRequestConflictException.class)
-    public ResponseEntity<ErrorResponse> handleLeaveRequestConflictException(
-            LeaveRequestConflictException ex, HttpServletRequest request) {
+    @ExceptionHandler({LeaveRequestConflictException.class, OverlappingLeaveRequestException.class})
+    public ResponseEntity<ErrorResponse> handleConflictException(
+            RuntimeException ex, HttpServletRequest request) {
         ErrorResponse error = ErrorResponse.builder()
                 .timestamp(LocalDateTime.now())
                 .status(HttpStatus.CONFLICT.value())
@@ -53,6 +54,19 @@ public class GlobalExceptionHandler {
                 .path(request.getRequestURI())
                 .build();
         return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
+    }
+
+    @ExceptionHandler(InvalidCredentialsException.class)
+    public ResponseEntity<ErrorResponse> handleInvalidCredentialsException(
+            InvalidCredentialsException ex, HttpServletRequest request) {
+        ErrorResponse error = ErrorResponse.builder()
+                .timestamp(LocalDateTime.now())
+                .status(HttpStatus.UNAUTHORIZED.value())
+                .error(HttpStatus.UNAUTHORIZED.getReasonPhrase())
+                .message(ex.getMessage())
+                .path(request.getRequestURI())
+                .build();
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
     }
 
     @ExceptionHandler(UnauthorizedActionException.class)

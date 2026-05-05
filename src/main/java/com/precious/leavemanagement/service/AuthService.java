@@ -8,6 +8,7 @@ import com.precious.leavemanagement.entity.LeaveBalance;
 import com.precious.leavemanagement.entity.LeaveType;
 import com.precious.leavemanagement.entity.User;
 import com.precious.leavemanagement.exception.DuplicateResourceException;
+import com.precious.leavemanagement.exception.InvalidCredentialsException;
 import com.precious.leavemanagement.repository.LeaveBalanceRepository;
 import com.precious.leavemanagement.repository.LeaveTypeRepository;
 import com.precious.leavemanagement.repository.UserRepository;
@@ -86,9 +87,13 @@ public class AuthService {
     }
 
     public AuthResponse login(LoginRequest request) {
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
-        );
+        try {
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
+            );
+        } catch (Exception ex) {
+            throw new InvalidCredentialsException("Invalid email or password");
+        }
 
         User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new RuntimeException("User not found"));
