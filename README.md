@@ -457,9 +457,10 @@ mvn clean test
 ```
 
 **Test Coverage**:
-- ✅ 42 unit tests (service layer)
-- ✅ 16 integration tests (controller layer)
-- ✅ **80% minimum code coverage** (enforced by JaCoCo in CI)
+- ✅ 53 unit tests (service layer + exception handlers)
+- ✅ 27 integration tests (controller layer)
+- ✅ **80% instruction coverage minimum** (enforced by JaCoCo in CI)
+- ✅ **75% branch coverage minimum** (enforced by JaCoCo in CI)
 
 ### Test Breakdown
 
@@ -468,9 +469,12 @@ mvn clean test
 - `LeaveRequestServiceTest`: 20 tests (submit, approve, reject, cancel, overlaps, balance)
 - `LeaveBalanceServiceTest`: 8 tests (get balances, calculate remaining)
 - `LeaveTypeServiceTest`: 5 tests (get all types)
+- `GlobalExceptionHandlerTest`: 11 tests (exception handling for all error types)
 
 **Integration Tests** (full Spring context, H2 database):
 - `LeaveRequestControllerIntegrationTest`: 16 tests (HTTP requests, JWT auth, role-based access)
+- `AuthControllerIntegrationTest`: 5 tests (registration, login, error cases)
+- `OtherControllersIntegrationTest`: 6 tests (balance & leave type endpoints)
 
 ### View Coverage Report
 ```bash
@@ -485,20 +489,20 @@ open target/site/jacoco/index.html
 | **service** | 95% ✅ | Business logic fully tested |
 | **controller** | 100% ✅ | All endpoints tested |
 | **security** | 99% ✅ | JWT & auth tested |
-| **exception** | 35% ⚠️ | Exception handlers (invoked via controllers) |
+| **exception** | 80% ✅ | Exception handlers tested |
 | dto.response | 25% | Data classes (excluded from gate) |
 | dto.request | 32% | Data classes (excluded from gate) |
 | entity | 26% | JPA entities (excluded from gate) |
 | enums | 100% | Simple enums |
 | config | 100% | Spring config |
 
-**Overall Coverage**: 41% (includes all classes)
+**Overall Coverage**: 43% (includes all classes)
 
 **Business Logic Coverage** (enforced by gate): **≥ 80%** ✅
 
 **Coverage Gate**: Build fails if:
 - Instruction coverage < 80% (for services, controllers, security, exceptions, repositories)
-- Branch coverage < 80% (for services, controllers, security, exceptions, repositories)
+- Branch coverage < 75% (for services, controllers, security, exceptions, repositories)
 - **Excludes**: DTOs, entities, enums, config classes (data/configuration classes don't need unit tests)
 
 **Why exclude DTOs/Entities?**
@@ -593,9 +597,9 @@ On next startup, Flyway detects and applies V6 automatically.
 3. Cache Maven dependencies
 4. Run `mvn clean verify`
    - Compile code
-   - Run 58 tests (42 unit + 16 integration)
+   - Run 80 tests (53 unit + 27 integration)
    - Generate JaCoCo coverage report
-   - **Fail build if coverage < 80%**
+   - **Fail build if instruction coverage < 80% or branch coverage < 75%**
 5. Upload coverage report as artifact
 
 **View Results**:
@@ -605,7 +609,7 @@ On next startup, Flyway detects and applies V6 automatically.
 
 **Coverage Gate**: Build fails if:
 - Instruction coverage < 80%
-- Branch coverage < 80%
+- Branch coverage < 75%
 
 This ensures code quality standards before merge.
 
@@ -671,20 +675,17 @@ src/
 └── test/
     └── java/com/precious/leavemanagement/
         ├── controller/
-        │   └── LeaveRequestControllerIntegrationTest.java  # Integration tests
-        └── service/                                        # Unit tests
+        │   ├── AuthControllerIntegrationTest.java              # Auth integration tests
+        │   ├── LeaveRequestControllerIntegrationTest.java      # Leave request integration tests
+        │   └── OtherControllersIntegrationTest.java            # Balance & type integration tests
+        ├── exception/
+        │   └── GlobalExceptionHandlerTest.java                 # Exception handler unit tests
+        └── service/                                            # Service unit tests
             ├── AuthServiceTest.java
             ├── LeaveRequestServiceTest.java
             ├── LeaveBalanceServiceTest.java
             └── LeaveTypeServiceTest.java
 ```
-
----
-
-## Documentation
-
-- **[CONCEPTS.md](CONCEPTS.md)**: Technical concepts explained (Spring Boot, REST, JPA, JWT, @Transactional, DTOs, Docker, CI/CD)
-- **[CLASS_GUIDE.md](CLASS_GUIDE.md)**: Detailed documentation of every class and method with test coverage
 
 ---
 
@@ -744,15 +745,3 @@ open target/site/jacoco/index.html
 - Default expiration: 24 hours
 - Login again to get new token
 - Adjust `JWT_EXPIRATION` environment variable if needed
-
----
-
-## License
-
-This project is for educational purposes. Modify and use as needed.
-
----
-
-## Contact
-
-For questions or issues, please create an issue in the repository.
